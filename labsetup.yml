@@ -1,0 +1,77 @@
+# /home/dluong/.config/tmuxinator/quicktrack.yml
+
+name: labsetup
+root: ~/
+
+# Optional tmux socket
+# socket_name: foo
+
+# Note that the pre and post options have been deprecated and will be replaced by
+# project hooks.
+
+# Project hooks
+# Runs on project start, always
+# on_project_start: command
+# Run on project start, the first time
+# on_project_first_start: command
+# Run on project start, after the first time
+# on_project_restart: command
+# Run on project exit ( detaching from tmux session )
+# on_project_exit: command
+# Run on project stop
+# on_project_stop: command
+
+# Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: rbenv shell 2.0.0-p247
+
+# Pass command line options to tmux. Useful for specifying a different tmux.conf.
+# tmux_options: -f ~/.tmux.mac.conf
+
+# Change the command to call tmux.  This can be used by derivatives/wrappers like byobu.
+# tmux_command: byobu
+
+# Specifies (by name or index) which window will be selected on project startup. If not set, the first window is used.
+# startup_window: editor
+
+# Specifies (by index) which pane of the specified window will be selected on project startup. If not set, the first pane is used.
+# startup_pane: 1
+
+# Controls whether the tmux session should be attached to automatically. Defaults to true.
+# attach: false
+
+windows:
+  - device:
+      root: ~/git/genxos-ng-test/
+      layout:  4188,422x101,0,0{112x101,0,0[112x50,0,0,5,112x50,0,51,7],204x101,113,0,6,104x101,318,0[104x50,318,0,2,104x50,318,51,3]}
+      panes:
+        - wan:
+          - dut <%= @settings["dut"] %>
+          - wan
+          - echo -ne '\n'
+        - wan_log:
+          - dut <%= @settings["dut"] %>
+          - wan
+          - echo -ne '\n'
+          - tail -f /var/log/syslog
+        - dut:
+          - dut <%= @settings["dut"] %>
+          - telnet
+        - lan1:
+          - dut <%= @settings["dut"] %>
+          - lan1
+        - lan1_log:
+          - dut <%= @settings["dut"] %>
+          - lan1
+          - h
+          - tail -f /var/log/syslog
+  - networking_tools:
+      root: ~/networking_tools
+      layout: 3b30,315x75,0,0{193x75,0,0,2,121x75,194,0[121x46,194,0,11,121x12,194,47,15,121x15,194,60,13]}
+      panes:
+        - syslog:
+          - sudo tail -f /var/log/syslog
+        - http_server:
+          - cd http
+          - ./execute_http.sh
+        - dhcp_client_list:
+          - while true; do dhcp-lease-list; sleep 1; clear; done
